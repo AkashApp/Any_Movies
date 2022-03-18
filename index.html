@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Any_Movie.com</title>
+    <style>
+        /* https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=73f2c2885cd288439377893036d616f2 */
+        body{
+            background-color: rgb(32, 32, 59);
+            color: white;
+        }
+        #Movie_Container{
+            width: 90%;
+            display: grid;
+            grid-template-columns: repeat(4, 20%);
+            justify-content: space-between;
+            margin-left: 3%;
+            margin-top: 50px;
+        
+        }
+        .border,img,button{
+            border-radius: 5%;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+        }
+        #navbar{
+            background-color: rgb(8, 15, 56);
+            width: 95%;
+            justify-content:space-between;
+            border-radius: 20px;
+            padding: 2%;
+        }
+        #error{
+            width: 1250px;
+        }
+        #details{
+            display: flex;
+            gap: 2%;
+        }
+        #details>div{
+            width: 40%;
+        }
+        #details>div>img{
+            width: 100%;
+        }
+
+        #movies{
+            height: 200px;
+            width: 206px;
+            /* border: 0.5px solid gray; */
+            border-top: none;
+            overflow: scroll;
+            margin-left: 10px;
+        }
+        #shows{
+            margin-top: 100px;
+            display: flex;
+            gap: 5%;
+        }
+    </style>
+    
+</head>
+<body>
+    <div id="navbar">
+        <input oninput="debounce(displayMovies(), 1000)" type="text" id="title" placeholder="Enter Movie Name">
+        <button onclick="Movies_List()">Search</button>
+        <button id="Popular" onclick="Popular_Movies()">Popular Movies</button>
+    </div>
+    <div id="movies"></div>
+    <div id="shows"></div>
+    <div id="call"></div>
+
+    <div id="Movie_Container"></div>
+    <div id="details"></div>
+    
+</body>
+</html>
+<script>
+
+function Popular_Movies(){
+    window.location.href= "new.html";
+}
+
+
+let api= "7c3d6bd8";
+    let movieDiv= document.getElementById("movies");
+    let bomb;
+    let shows= document.getElementById("shows");
+
+async function searchMovies(){
+    try{
+        let name = document.getElementById("title").value;
+        let response = await fetch(`http://www.omdbapi.com/?s=${name}&apikey=${api}`);
+        let data= await response.json();
+        // console.log("data:",data);
+        return data.Search;
+    }
+    catch(err){
+        console.log("err:",err);
+    }
+}
+async function displayMovies(){
+    console.log("fired after 2sec");
+    movieDiv.innerHTML= null;
+    let movie_data = await searchMovies();
+    // console.log("movie_data:", movie_data);
+    // for not valid search Or data is large
+    if(movie_data === undefined){
+        return false;
+    }
+    console.log("movie_data:", movie_data);
+    movie_show(movie_data);
+    
+}
+
+function movie_show(movie_data,index){
+    movie_data.forEach(function(movie){
+        let pin= document.createElement("p");
+        pin.innerText = movie.Title;
+        pin.addEventListener("click", async function show(){
+                try{
+                    details.innerHTML="";
+                    Movie_Container.innerHTML="";
+                    let id= movie.imdbID;
+                    let M_s=`http://www.omdbapi.com/?i=${id}&apikey=${api}`;
+
+                    let res= await fetch(M_s);
+                    let M_data= await res.json();
+                    console.log(M_data);
+                    if(M_data.imdbRating >= 8.5){
+                        h1T.innerText="Recommended";
+                    }
+                    Movie_Show(M_data);
+                }
+                catch(er){
+                 console.log("er",er);
+                }
+        })
+        
+        movieDiv.append(pin);
+    });
+}
+
+function debounce(func, delay){
+    clearTimeout(bomb);
+    bomb = setTimeout(function(){
+        func();
+    },delay);
+}
+// another first code-->
+    let Movie_Container=document.getElementById("Movie_Container");
+    let details= document.getElementById("details");
+    let h1T= document.createElement("h1");
+    h1T.innerText="";
+
+    // 'http://www.omdbapi.com/discover/movie?sort_by=popularity.desc&apikey=aeb7219c'
+    // `http://www.omdbapi.com/?sort_by=popularity.desc&apikey=aeb7219c`
+
+    let apikey="aeb7219c";
+
+        async function Movies_List(){
+            details.innerHTML= "";
+            Movie_Container.innerHTML="";
+            let movie= document.getElementById("title");
+            let search= movie.value; 
+            let url= `http://www.omdbapi.com/?s=${search}&apikey=${apikey}`;
+            try{
+                let call= document.getElementById("call");
+                call.innerText="If you click on any movie you are able to get every detail of that movie";
+                let response= await fetch(url);
+                let data= await response.json();
+                let movie_data= data.Search;
+                console.log(movie_data);
+                Movies(movie_data);
+            }
+            catch (err){
+                console.log("some error", err);
+                let img= document.createElement("img");
+                img.setAttribute("id", "error");
+                img.src= "https://www.teahub.io/photos/full/304-3045322_robo-404-page-404-error-page-gif.gif";
+                Movie_Container.append(img);
+            }
+        }
+
+    function Movies(movie_data,index){
+        movie_data.forEach(function (result){
+                let div= document.createElement("div");
+                div.setAttribute("class", "border");
+                div.addEventListener("click", async function show(){
+                        try{
+                            details.innerHTML= "";
+                            Movie_Container.innerHTML="";
+                            let id= result.imdbID;
+                            let M_s=`http://www.omdbapi.com/?i=${id}&apikey=${apikey}`;
+
+                            let res= await fetch(M_s);
+                            let M_data= await res.json();
+                            console.log(M_data);
+                            if(M_data.imdbRating >= 8.5){
+                                h1T.innerText="Recommended";
+                            }
+                            Movie_Show(M_data);
+                        }
+                        catch(er){
+                            console.log("er",er);
+                        }
+                })
+
+                let img= document.createElement("img");
+                img.src= result.Poster;
+
+                let h1= document.createElement("h1");
+                h1.innerText= result.Title;
+
+                let h2= document.createElement("h2");
+                h2.innerText= result.Year;
+
+
+                div.append(img,h1,h2,h1T);
+                Movie_Container.append(div);
+            });
+        }
+
+        function Movie_Show(M_data){
+
+            let div1= document.createElement("div");
+            let div2= document.createElement("div");
+
+            let poster=document.createElement("img");
+            poster.src= M_data.Poster;
+
+            let p1= document.createElement("p");
+            p1.innerText=`Actors: ${M_data.Actors}`;
+
+            let p2= document.createElement("p");
+            p2.innerText=`Awards: ${M_data.Awards}`;
+            
+            let p3= document.createElement("p");
+            p3.innerText=`Earning: ${M_data.BoxOffice}`;
+            
+            let p4= document.createElement("p");
+            p4.innerText=`Country: ${M_data.Country}`;
+            
+            let p5= document.createElement("p");
+            p5.innerText=`DVD Released Date: ${M_data.DVD}`;
+            
+            let p6= document.createElement("p");
+            p6.innerText=`Director: ${M_data.Director}`;
+
+            let p7= document.createElement("p");
+            p7.innerText=`Genre: ${M_data.Genre}`;
+            
+            let p8= document.createElement("p");
+            p8.innerText=`Languages: ${M_data.Language}`;
+            
+            let p9= document.createElement("p");
+            p9.innerText=`Short Story: ${M_data.Plot}`;
+
+            let p10= document.createElement("p");
+            p10.innerText=`Released Date: ${M_data.Released}`;
+            
+            let p11= document.createElement("p");
+            p11.innerText=`Duration: ${M_data.Runtime}`;
+            
+            let p12= document.createElement("p");
+            p12.innerText=`Writer: ${M_data.Writer}`;
+
+            let p13= document.createElement("p");
+            p13.innerText=`IMDB Rating: ${M_data.imdbRating}`;
+            
+            let p14= document.createElement("p");
+            p14.innerText=`IMDB Votes: ${M_data.imdbVotes}`;
+            
+            let h1M= document.createElement("h1");
+            h1M.innerText= M_data.Title;
+
+            div1.append(poster);
+            div2.append(h1M,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14);
+            details.append(div1, div2);
+        }
+
+
+</script>

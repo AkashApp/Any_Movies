@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Any_Movie.com</title>
+    <style>
+        body{
+            background-color: rgb(32, 32, 59);
+            color: white;
+        }
+        .movie_grid{
+            display: grid;
+            grid-template-columns: repeat(5, 18%);
+            grid-gap: 1.5%;
+            margin-left: 5%;
+        }
+        .img_movie{
+            width: 100%;
+        }
+        .movie_grid>div{
+            /* color: rgb(57, 57, 100);; */
+            background-color: rgb(57, 57, 100);
+            border-radius: 10%;
+            border: 1px solid rgb(16, 16, 29); ;
+        }
+        #navbar{
+            background-color: rgb(8, 15, 56);
+            width: 95%;
+            justify-content:space-between;
+            border-radius: 20px;
+            padding: 2%;
+            margin-bottom: 50px;
+        }
+        #Movie_Container{
+            width: 90%;
+            display: grid;
+            grid-template-columns: repeat(4, 20%);
+            justify-content: space-between;
+            margin-left: 3%;
+            margin-top: 50px;
+        
+        }
+        .border,img,button{
+            border-radius: 5%;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+        }
+        #details{
+            display: flex;
+            gap: 2%;
+        }
+        #details>div{
+            width: 40%;
+        }
+        #details>div>img{
+            width: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        
+        <button id="Popular" onclick="home()">back to Home</button>
+    </div>
+    <div id="body"></div>
+    <div id="Movie_Container"></div>
+    <div id="details"></div>
+</body>
+</html>
+<script>
+function home(){
+    window.location.href= "./index.html";
+}
+
+    // https://api.themoviedb.org/discover/movie?sort_by=popularity.desc?api_key=c173916f4d4f0e9304b4faf418b1f267
+    let body= document.querySelector("#body");
+    let div_Main= document.createElement("div");
+    div_Main.setAttribute("class", "movie_grid");
+    let h10= document.createElement("h2");
+    h10.innerText="click on movie to check details";
+    body.append(h10);
+    let api= "7c3d6bd8";
+    
+    async function searchMovies(){
+
+        try{
+            // let name = document.getElementById("query").value;
+
+            let response = await fetch(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=73f2c2885cd288439377893036d616f2`);
+            let data= await response.json();
+            let show= data.results;
+            console.log(show);
+            Show_Movies(show);
+        }
+        catch(err){
+            console.log("err:",err);
+        }
+    }
+
+    function Show_Movies(show){
+        show.forEach(function (movie){
+            let div= document.createElement("div");
+            
+
+            let h1T= document.createElement("h1");
+            h1T.innerText= movie.title;
+            div.addEventListener("click", async function show(){
+                try{
+                    body.innerHTML="";
+                    Movie_Container.innerHTML="";
+                    let name= movie.title;
+                    let M_s=`http://www.omdbapi.com/?s=${name}&apikey=${api}`;
+
+                    let res= await fetch(M_s);
+                    let M_data= await res.json();
+                    let abhi= M_data.Search;
+                    let id= abhi[0].imdbID;
+
+                    let M_SS= `http://www.omdbapi.com/?i=${id}&apikey=${api}`;
+                    let aku= await fetch(M_SS);
+                    let ani= await aku.json();
+
+                    console.log(M_data);
+                    console.log(ani);
+                    Movie_Show(ani);
+                }
+                catch(er){
+                 console.log("er",er);
+                }
+        })
+
+            let img= document.createElement("img");
+            img.setAttribute("src", movie.poster_path);
+            img.setAttribute("class", "img_movie");
+
+            let h3T= document.createElement("h3");
+            h3T.innerText= movie.release_date;
+
+            let h4T= document.createElement("h4");
+            h4T.innerText= movie.vote_average;
+
+            div.append(img,h1T,h3T,h4T);
+            div_Main.append(div);
+
+        })
+    }
+    body.append(div_Main);
+    searchMovies()
+
+
+function Movie_Show(M_data){
+
+let div1= document.createElement("div");
+let div2= document.createElement("div");
+
+let poster=document.createElement("img");
+poster.src= M_data.Poster;
+
+let p1= document.createElement("p");
+p1.innerText=`Actors: ${M_data.Actors}`;
+
+let p2= document.createElement("p");
+p2.innerText=`Awards: ${M_data.Awards}`;
+
+let p3= document.createElement("p");
+p3.innerText=`Earning: ${M_data.BoxOffice}`;
+
+let p4= document.createElement("p");
+p4.innerText=`Country: ${M_data.Country}`;
+
+let p5= document.createElement("p");
+p5.innerText=`DVD Released Date: ${M_data.DVD}`;
+
+let p6= document.createElement("p");
+p6.innerText=`Director: ${M_data.Director}`;
+
+let p7= document.createElement("p");
+p7.innerText=`Genre: ${M_data.Genre}`;
+
+let p8= document.createElement("p");
+p8.innerText=`Languages: ${M_data.Language}`;
+
+let p9= document.createElement("p");
+p9.innerText=`Short Story: ${M_data.Plot}`;
+
+let p10= document.createElement("p");
+p10.innerText=`Released Date: ${M_data.Released}`;
+
+let p11= document.createElement("p");
+p11.innerText=`Duration: ${M_data.Runtime}`;
+
+let p12= document.createElement("p");
+p12.innerText=`Writer: ${M_data.Writer}`;
+
+let p13= document.createElement("p");
+p13.innerText=`IMDB Rating: ${M_data.imdbRating}`;
+
+let p14= document.createElement("p");
+p14.innerText=`IMDB Votes: ${M_data.imdbVotes}`;
+
+let h1M= document.createElement("h1");
+h1M.innerText= M_data.Title;
+
+let btn= document.createElement("button");
+btn.innerText= "Back";
+btn.addEventListener("click", function(){
+    window.location.href= "new.html";
+})
+
+div1.append(poster);
+div2.append(h1M,p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,btn);
+details.append(div1, div2);
+}
+
+</script>
